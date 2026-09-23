@@ -6,19 +6,19 @@ L'interface permet de consulter les données météorologiques en temps réel ai
 
 ## 📋 Fonctionnalités
 
-- 🌡️ Température
-- 💧 Humidité
-- 💨 Vitesse du vent
-- 📊 Pression atmosphérique
-- 📈 Historique des mesures
-- 🔘 Sélection de la période d'historique
-- 🗺️ Localisation de la station
-- 🛰️ Carte interactive
-- 🟢 État de connexion de la station
-- 🕐 Heure en temps réel
-- 📡 Informations du capteur
-- 📱 Interface responsive
-- 📊 Graphiques des données
+- Température
+- Humidité
+- Vitesse du vent
+- Pression atmosphérique
+- Historique des mesures
+- Sélection de la période d'historique
+- Localisation de la station
+- Carte interactive
+- État de connexion de la station
+- Heure en temps réel
+- Informations du capteur
+- Interface responsive
+- Graphiques des données
 
 ## 🛠️ Technologies
 
