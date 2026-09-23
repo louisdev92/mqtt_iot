@@ -30,9 +30,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Leaflet JS -->
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 </head>
 
@@ -52,7 +50,7 @@
             🌦️ Station météo
         </h1>
 
-        <p class="device-name">
+        <p class="device-name" id="deviceName">
 
             {{ data.get(
                 "device_name",
@@ -94,9 +92,12 @@
 
         <div class="status">
 
-            <span class="status-dot"></span>
+            <span
+                class="status-dot"
+                id="statusDot"
+            ></span>
 
-            <span>
+            <span id="statusText">
                 Capteur connecté
             </span>
 
@@ -105,6 +106,43 @@
     </div>
 
 </header>
+
+
+<!-- ==========================================
+     BANDEAU D'ALERTE
+     ========================================== -->
+
+<div
+    id="alertBanner"
+    class="alert-banner"
+    style="display: none;"
+>
+
+    <span class="alert-icon">
+        ⚠️
+    </span>
+
+    <div class="alert-content">
+
+        <strong id="alertTitle">
+            Alerte météo
+        </strong>
+
+        <span id="alertMessage">
+            —
+        </span>
+
+    </div>
+
+    <button
+        class="alert-close"
+        onclick="closeAlert()"
+        aria-label="Fermer"
+    >
+        ×
+    </button>
+
+</div>
 
 
 <!-- ==========================================
@@ -142,9 +180,11 @@
 
         <div class="main-value">
 
-            {{ "%.1f"|format(
-                data.get("temperature", 0) or 0
-            ) }}
+            <span id="temperatureValue">
+                {{ "%.1f"|format(
+                    data.get("temperature", 0) or 0
+                ) }}
+            </span>
 
             <span>
                 °C
@@ -179,9 +219,11 @@
 
         <div class="main-value">
 
-            {{ "%.0f"|format(
-                data.get("humidity", 0) or 0
-            ) }}
+            <span id="humidityValue">
+                {{ "%.0f"|format(
+                    data.get("humidity", 0) or 0
+                ) }}
+            </span>
 
             <span>
                 %
@@ -216,9 +258,11 @@
 
         <div class="main-value">
 
-            {{ "%.1f"|format(
-                data.get("wind_speed", 0) or 0
-            ) }}
+            <span id="windSpeedValue">
+                {{ "%.1f"|format(
+                    data.get("wind_speed", 0) or 0
+                ) }}
+            </span>
 
             <span>
                 km/h
@@ -253,9 +297,11 @@
 
         <div class="main-value">
 
-            {{ "%.1f"|format(
-                data.get("air_pressure", 0) or 0
-            ) }}
+            <span id="pressureValue">
+                {{ "%.1f"|format(
+                    data.get("air_pressure", 0) or 0
+                ) }}
+            </span>
 
             <span>
                 hPa
@@ -287,6 +333,8 @@
     <div class="measurements">
 
 
+        <!-- DIRECTION DU VENT -->
+
         <div class="measurement-card">
 
             <div class="measurement-icon">
@@ -301,12 +349,14 @@
 
                 <div class="measurement-value">
 
-                    {{ "%.0f"|format(
-                        data.get(
-                            "wind_direction",
-                            0
-                        ) or 0
-                    ) }}
+                    <span id="windDirectionValue">
+                        {{ "%.0f"|format(
+                            data.get(
+                                "wind_direction",
+                                0
+                            ) or 0
+                        ) }}
+                    </span>
 
                     °
 
@@ -316,6 +366,8 @@
 
         </div>
 
+
+        <!-- RAFALE -->
 
         <div class="measurement-card">
 
@@ -331,12 +383,14 @@
 
                 <div class="measurement-value">
 
-                    {{ "%.1f"|format(
-                        data.get(
-                            "peak_wind",
-                            0
-                        ) or 0
-                    ) }}
+                    <span id="peakWindValue">
+                        {{ "%.1f"|format(
+                            data.get(
+                                "peak_wind",
+                                0
+                            ) or 0
+                        ) }}
+                    </span>
 
                     km/h
 
@@ -346,6 +400,8 @@
 
         </div>
 
+
+        <!-- UV -->
 
         <div class="measurement-card">
 
@@ -361,12 +417,14 @@
 
                 <div class="measurement-value">
 
-                    {{ "%.1f"|format(
-                        data.get(
-                            "uv_index",
-                            0
-                        ) or 0
-                    ) }}
+                    <span id="uvValue">
+                        {{ "%.1f"|format(
+                            data.get(
+                                "uv_index",
+                                0
+                            ) or 0
+                        ) }}
+                    </span>
 
                 </div>
 
@@ -374,6 +432,8 @@
 
         </div>
 
+
+        <!-- LUMINOSITÉ -->
 
         <div class="measurement-card">
 
@@ -389,12 +449,14 @@
 
                 <div class="measurement-value">
 
-                    {{ "%.0f"|format(
-                        data.get(
-                            "illumination",
-                            0
-                        ) or 0
-                    ) }}
+                    <span id="illuminationValue">
+                        {{ "%.0f"|format(
+                            data.get(
+                                "illumination",
+                                0
+                            ) or 0
+                        ) }}
+                    </span>
 
                     lux
 
@@ -404,6 +466,8 @@
 
         </div>
 
+
+        <!-- PLUIE -->
 
         <div class="measurement-card">
 
@@ -419,12 +483,14 @@
 
                 <div class="measurement-value">
 
-                    {{ "%.3f"|format(
-                        data.get(
-                            "rainfall",
-                            0
-                        ) or 0
-                    ) }}
+                    <span id="rainfallValue">
+                        {{ "%.3f"|format(
+                            data.get(
+                                "rainfall",
+                                0
+                            ) or 0
+                        ) }}
+                    </span>
 
                 </div>
 
@@ -432,6 +498,8 @@
 
         </div>
 
+
+        <!-- ACCUMULATION -->
 
         <div class="measurement-card">
 
@@ -447,81 +515,20 @@
 
                 <div class="measurement-value">
 
-                    {{ "%.3f"|format(
-                        data.get(
-                            "rain_accumulation",
-                            0
-                        ) or 0
-                    ) }}
+                    <span id="rainAccumulationValue">
+                        {{ "%.3f"|format(
+                            data.get(
+                                "rain_accumulation",
+                                0
+                            ) or 0
+                        ) }}
+                    </span>
 
                 </div>
 
             </div>
 
         </div>
-
-    </div>
-
-</section>
-
-
-<!-- ==========================================
-     LOCALISATION
-     ========================================== -->
-
-<section class="section">
-
-    <h2>
-        📍 Localisation de la station météo
-    </h2>
-
-
-    <div class="location-card">
-
-
-        <div class="location-info">
-
-
-            <div>
-
-                <span>
-                    Latitude
-                </span>
-
-                <strong>
-                    {{ data.get(
-                        "latitude",
-                        "—"
-                    ) }}
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    Longitude
-                </span>
-
-                <strong>
-                    {{ data.get(
-                        "longitude",
-                        "—"
-                    ) }}
-                </strong>
-
-            </div>
-
-
-        </div>
-
-
-        <div
-            id="map"
-            class="weather-map"
-        ></div>
-
 
     </div>
 
@@ -715,7 +722,7 @@
                 Type
             </span>
 
-            <strong>
+            <strong id="deviceType">
                 {{ data.get(
                     "device_type",
                     "SenseCAP S2120"
@@ -731,7 +738,7 @@
                 RSSI
             </span>
 
-            <strong>
+            <strong id="rssiValue">
                 {{ data.get(
                     "rssi",
                     "—"
@@ -747,7 +754,7 @@
                 SNR
             </span>
 
-            <strong>
+            <strong id="snrValue">
                 {{ data.get(
                     "snr",
                     "—"
@@ -763,7 +770,8 @@
                 Dernière mesure
             </span>
 
-            <strong>
+            <strong id="lastMeasurementTime">
+
                 {{ data.get(
                     "time",
                     data.get(
@@ -771,9 +779,77 @@
                         "—"
                     )
                 ) }}
+
             </strong>
 
         </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     LOCALISATION
+     ========================================== -->
+
+<section class="section">
+
+    <h2>
+        📍 Localisation de la station météo
+    </h2>
+
+
+    <div class="location-card">
+
+
+        <div class="location-info">
+
+            <p>Le capteur est localise à Blois</p>
+            <div>
+
+                <span>
+                    Latitude
+                </span>
+
+                <strong id="latitudeValue">
+
+                    {{ data.get(
+                        "latitude",
+                        "—"
+                    ) }}
+
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Longitude
+                </span>
+
+                <strong id="longitudeValue">
+
+                    {{ data.get(
+                        "longitude",
+                        "—"
+                    ) }}
+
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div
+            id="map"
+            class="weather-map"
+        ></div>
 
 
     </div>
@@ -838,7 +914,6 @@
 
 </footer>
 
-
 <script>
 
 /* ==========================================
@@ -873,40 +948,24 @@ function updateClock() {
     const text =
         date + " — " + time;
 
-
     const clock =
-        document.getElementById(
-            "currentTime"
-        );
+        document.getElementById("currentTime");
 
     const footer =
-        document.getElementById(
-            "footerTime"
-        );
-
+        document.getElementById("footerTime");
 
     if (clock) {
-
         clock.textContent = text;
-
     }
-
 
     if (footer) {
-
         footer.textContent = text;
-
     }
-
 }
-
 
 updateClock();
 
-setInterval(
-    updateClock,
-    1000
-);
+setInterval(updateClock, 1000);
 
 
 /* ==========================================
@@ -915,25 +974,16 @@ setInterval(
 
 function toggleDarkMode() {
 
-    document.body.classList.toggle(
-        "dark-mode"
-    );
-
+    document.body.classList.toggle("dark-mode");
 
     const button =
-        document.getElementById(
-            "darkModeButton"
-        );
-
+        document.getElementById("darkModeButton");
 
     if (
-        document.body.classList.contains(
-            "dark-mode"
-        )
+        document.body.classList.contains("dark-mode")
     ) {
 
-        button.textContent =
-            "☀️ Mode clair";
+        button.textContent = "☀️ Mode clair";
 
         localStorage.setItem(
             "darkMode",
@@ -942,51 +992,40 @@ function toggleDarkMode() {
 
     } else {
 
-        button.textContent =
-            "🌙 Mode sombre";
+        button.textContent = "🌙 Mode sombre";
 
         localStorage.setItem(
             "darkMode",
             "false"
         );
-
     }
-
 }
 
 
 /* Restaurer le mode sombre */
 
 if (
-    localStorage.getItem(
-        "darkMode"
-    ) === "true"
+    localStorage.getItem("darkMode") === "true"
 ) {
 
-    document.body.classList.add(
-        "dark-mode"
-    );
-
+    document.body.classList.add("dark-mode");
 
     const button =
-        document.getElementById(
-            "darkModeButton"
-        );
-
+        document.getElementById("darkModeButton");
 
     if (button) {
-
-        button.textContent =
-            "☀️ Mode clair";
-
+        button.textContent = "☀️ Mode clair";
     }
-
 }
 
 
 /* ==========================================
    CARTE
    ========================================== */
+
+let weatherMap = null;
+let weatherMarker = null;
+
 
 function initMap() {
 
@@ -1000,7 +1039,6 @@ function initMap() {
             "{{ data.get('longitude', '') }}"
         );
 
-
     if (
         isNaN(latitude) ||
         isNaN(longitude)
@@ -1011,11 +1049,9 @@ function initMap() {
         );
 
         return;
-
     }
 
-
-    const map =
+    weatherMap =
         L.map("map").setView(
             [
                 latitude,
@@ -1024,30 +1060,25 @@ function initMap() {
             15
         );
 
-
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-
             attribution:
                 "&copy; OpenStreetMap contributors",
 
             maxZoom: 19
-
         }
-    ).addTo(map);
+    ).addTo(weatherMap);
 
-
-    const marker =
+    weatherMarker =
         L.marker(
             [
                 latitude,
                 longitude
             ]
-        ).addTo(map);
+        ).addTo(weatherMap);
 
-
-    marker.bindPopup(
+    weatherMarker.bindPopup(
         `
         <strong>🌦️ Station météo</strong>
         <br>
@@ -1058,18 +1089,96 @@ function initMap() {
         Longitude : ${longitude}
         `
     );
-
 }
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+/* ==========================================
+   MISE À JOUR DE LA CARTE
+   ========================================== */
 
-        initMap();
+function updateMap(data) {
+
+    if (!weatherMap) {
+        return;
+    }
+
+    const latitude =
+        parseFloat(data.latitude);
+
+    const longitude =
+        parseFloat(data.longitude);
+
+    if (
+        isNaN(latitude) ||
+        isNaN(longitude)
+    ) {
+        return;
+    }
+
+    const position = [
+        latitude,
+        longitude
+    ];
+
+    if (weatherMarker) {
+
+        weatherMarker.setLatLng(position);
+
+        weatherMarker.setPopupContent(
+            `
+            <strong>🌦️ Station météo</strong>
+            <br>
+            SenseCAP S2120
+            <br><br>
+            Latitude : ${latitude}
+            <br>
+            Longitude : ${longitude}
+            `
+        );
+
+    } else {
+
+        weatherMarker =
+            L.marker(position)
+                .addTo(weatherMap);
 
     }
-);
+
+    weatherMap.setView(
+        position,
+        weatherMap.getZoom()
+    );
+
+
+    /* Latitude */
+
+    const latitudeElement =
+        document.querySelector(
+            ".location-info div:nth-child(1) strong"
+        );
+
+    if (latitudeElement) {
+
+        latitudeElement.textContent =
+            latitude;
+
+    }
+
+
+    /* Longitude */
+
+    const longitudeElement =
+        document.querySelector(
+            ".location-info div:nth-child(2) strong"
+        );
+
+    if (longitudeElement) {
+
+        longitudeElement.textContent =
+            longitude;
+
+    }
+}
 
 
 /* ==========================================
@@ -1077,26 +1186,26 @@ document.addEventListener(
    ========================================== */
 
 let temperatureChart = null;
-
 let humidityChart = null;
-
 let windChart = null;
 
 
-function formatDate(
-    dateString
-) {
+/* ==========================================
+   FORMAT DATE
+   ========================================== */
+
+function formatDate(dateString) {
 
     if (!dateString) {
-
         return "";
-
     }
-
 
     const date =
         new Date(dateString);
 
+    if (isNaN(date.getTime())) {
+        return dateString;
+    }
 
     return date.toLocaleTimeString(
         "fr-FR",
@@ -1105,7 +1214,6 @@ function formatDate(
             minute: "2-digit"
         }
     );
-
 }
 
 
@@ -1130,9 +1238,7 @@ function formatStats(
     ) {
 
         return "Aucune donnée";
-
     }
-
 
     return (
         Number(min).toFixed(1)
@@ -1147,7 +1253,6 @@ function formatStats(
         + " "
         + unit
     );
-
 }
 
 
@@ -1165,17 +1270,11 @@ function createChart(
 ) {
 
     const canvas =
-        document.getElementById(
-            canvasId
-        );
-
+        document.getElementById(canvasId);
 
     if (!canvas) {
-
         return null;
-
     }
-
 
     return new Chart(
         canvas,
@@ -1213,7 +1312,6 @@ function createChart(
                     }
 
                 ]
-
             },
 
             options: {
@@ -1233,16 +1331,11 @@ function createChart(
                             text: unit
 
                         }
-
                     }
-
                 }
-
             }
-
         }
     );
-
 }
 
 
@@ -1264,20 +1357,16 @@ async function loadHistory(
                 + Date.now()
             );
 
-
         if (!response.ok) {
 
             throw new Error(
                 "Erreur historique : "
                 + response.status
             );
-
         }
-
 
         const history =
             await response.json();
-
 
         if (
             !history ||
@@ -1285,11 +1374,10 @@ async function loadHistory(
         ) {
 
             return;
-
         }
 
 
-        const labels =
+        let labels =
             history.map(
                 item =>
                     formatDate(
@@ -1298,59 +1386,104 @@ async function loadHistory(
             );
 
 
-        const temperatures =
+        let temperatures =
             history.map(
                 item =>
                     item.temperature !== null
-                        ? Number(
-                            item.temperature
-                        )
+                        ? Number(item.temperature)
                         : null
             );
 
 
-        const humidities =
+        let humidities =
             history.map(
                 item =>
                     item.humidity !== null
-                        ? Number(
-                            item.humidity
-                        )
+                        ? Number(item.humidity)
                         : null
             );
 
 
-        const winds =
+        let winds =
             history.map(
                 item =>
                     item.wind_speed !== null
-                        ? Number(
-                            item.wind_speed
-                        )
+                        ? Number(item.wind_speed)
                         : null
             );
 
 
-        if (temperatureChart) {
+        /* ==========================================
+           RÉDUCTION À 30 POINTS
+           ========================================== */
 
-            temperatureChart.destroy();
+        const maxPoints = 30;
 
+        if (
+            history.length > maxPoints
+        ) {
+
+            const step =
+                (history.length - 1)
+                / (maxPoints - 1);
+
+            const indexes = [];
+
+            for (
+                let i = 0;
+                i < maxPoints;
+                i++
+            ) {
+
+                indexes.push(
+                    Math.round(
+                        i * step
+                    )
+                );
+            }
+
+            labels =
+                indexes.map(
+                    i => labels[i]
+                );
+
+            temperatures =
+                indexes.map(
+                    i => temperatures[i]
+                );
+
+            humidities =
+                indexes.map(
+                    i => humidities[i]
+                );
+
+            winds =
+                indexes.map(
+                    i => winds[i]
+                );
         }
 
+
+        /* ==========================================
+           DESTRUCTION DES ANCIENS GRAPHIQUES
+           ========================================== */
+
+        if (temperatureChart) {
+            temperatureChart.destroy();
+        }
 
         if (humidityChart) {
-
             humidityChart.destroy();
-
         }
-
 
         if (windChart) {
-
             windChart.destroy();
-
         }
 
+
+        /* ==========================================
+           NOUVEAUX GRAPHIQUES
+           ========================================== */
 
         temperatureChart =
             createChart(
@@ -1385,7 +1518,9 @@ async function loadHistory(
             );
 
 
-        /* Statistiques */
+        /* ==========================================
+           STATISTIQUES
+           ========================================== */
 
         const statsResponse =
             await fetch(
@@ -1395,47 +1530,63 @@ async function loadHistory(
                 + Date.now()
             );
 
-
         if (statsResponse.ok) {
 
             const stats =
                 await statsResponse.json();
 
 
-            document.getElementById(
-                "temperatureStats"
-            ).textContent =
-                formatStats(
-                    stats.temperature_min,
-                    stats.temperature_avg,
-                    stats.temperature_max,
-                    "°C"
+            const temperatureStats =
+                document.getElementById(
+                    "temperatureStats"
+                );
+
+            const humidityStats =
+                document.getElementById(
+                    "humidityStats"
+                );
+
+            const windStats =
+                document.getElementById(
+                    "windStats"
                 );
 
 
-            document.getElementById(
-                "humidityStats"
-            ).textContent =
-                formatStats(
-                    stats.humidity_min,
-                    stats.humidity_avg,
-                    stats.humidity_max,
-                    "%"
-                );
+            if (temperatureStats) {
+
+                temperatureStats.textContent =
+                    formatStats(
+                        stats.temperature_min,
+                        stats.temperature_avg,
+                        stats.temperature_max,
+                        "°C"
+                    );
+            }
 
 
-            document.getElementById(
-                "windStats"
-            ).textContent =
-                formatStats(
-                    stats.wind_min,
-                    stats.wind_avg,
-                    stats.wind_max,
-                    "km/h"
-                );
+            if (humidityStats) {
 
+                humidityStats.textContent =
+                    formatStats(
+                        stats.humidity_min,
+                        stats.humidity_avg,
+                        stats.humidity_max,
+                        "%"
+                    );
+            }
+
+
+            if (windStats) {
+
+                windStats.textContent =
+                    formatStats(
+                        stats.wind_min,
+                        stats.wind_avg,
+                        stats.wind_max,
+                        "km/h"
+                    );
+            }
         }
-
 
     } catch (error) {
 
@@ -1443,26 +1594,609 @@ async function loadHistory(
             "Erreur historique :",
             error
         );
-
     }
-
 }
 
 
 /* ==========================================
-   CHARGEMENT HISTORIQUE
+   MISE À JOUR DES BLOCS MÉTÉO
+   ========================================== */
+
+function updateWeatherBlocks(data) {
+
+    /*
+     * Les 4 grandes cartes
+     */
+
+    const mainValues =
+        document.querySelectorAll(
+            ".weather-card .main-value"
+        );
+
+
+    if (mainValues.length >= 4) {
+
+        /* Température */
+
+        mainValues[0].innerHTML =
+            (
+                data.temperature !== null &&
+                data.temperature !== undefined
+            )
+                ? Number(data.temperature).toFixed(1)
+                  + " <span>°C</span>"
+                : "—";
+
+
+        /* Humidité */
+
+        mainValues[1].innerHTML =
+            (
+                data.humidity !== null &&
+                data.humidity !== undefined
+            )
+                ? Number(data.humidity).toFixed(0)
+                  + " <span>%</span>"
+                : "—";
+
+
+        /* Vent */
+
+        mainValues[2].innerHTML =
+            (
+                data.wind_speed !== null &&
+                data.wind_speed !== undefined
+            )
+                ? Number(data.wind_speed).toFixed(1)
+                  + " <span>km/h</span>"
+                : "—";
+
+
+        /* Pression */
+
+        mainValues[3].innerHTML =
+            (
+                data.air_pressure !== null &&
+                data.air_pressure !== undefined
+            )
+                ? Number(data.air_pressure).toFixed(1)
+                  + " <span>hPa</span>"
+                : "—";
+    }
+
+
+    /*
+     * Les 6 mesures secondaires
+     */
+
+    const measurementValues =
+        document.querySelectorAll(
+            ".measurement-value"
+        );
+
+
+    if (measurementValues.length >= 6) {
+
+        /* Direction */
+
+        measurementValues[0].innerHTML =
+            (
+                data.wind_direction !== null &&
+                data.wind_direction !== undefined
+            )
+                ? Number(
+                    data.wind_direction
+                  ).toFixed(0)
+                  + " °"
+                : "—";
+
+
+        /* Rafale */
+
+        measurementValues[1].innerHTML =
+            (
+                data.peak_wind !== null &&
+                data.peak_wind !== undefined
+            )
+                ? Number(
+                    data.peak_wind
+                  ).toFixed(1)
+                  + " km/h"
+                : "—";
+
+
+        /* UV */
+
+        measurementValues[2].innerHTML =
+            (
+                data.uv_index !== null &&
+                data.uv_index !== undefined
+            )
+                ? Number(
+                    data.uv_index
+                  ).toFixed(1)
+                : "—";
+
+
+        /* Luminosité */
+
+        measurementValues[3].innerHTML =
+            (
+                data.illumination !== null &&
+                data.illumination !== undefined
+            )
+                ? Number(
+                    data.illumination
+                  ).toFixed(0)
+                  + " lux"
+                : "—";
+
+
+        /* Pluie */
+
+        measurementValues[4].innerHTML =
+            (
+                data.rainfall !== null &&
+                data.rainfall !== undefined
+            )
+                ? Number(
+                    data.rainfall
+                  ).toFixed(3)
+                : "—";
+
+
+        /* Accumulation pluie */
+
+        measurementValues[5].innerHTML =
+            (
+                data.rain_accumulation !== null &&
+                data.rain_accumulation !== undefined
+            )
+                ? Number(
+                    data.rain_accumulation
+                  ).toFixed(3)
+                : "—";
+    }
+
+
+    /*
+     * Informations du capteur
+     */
+
+    const infoValues =
+        document.querySelectorAll(
+            ".info-item strong"
+        );
+
+
+    if (infoValues.length >= 4) {
+
+        /* Type */
+
+        infoValues[0].textContent =
+            data.device_type ||
+            "SenseCAP S2120";
+
+
+        /* RSSI */
+
+        infoValues[1].textContent =
+            data.rssi !== null &&
+            data.rssi !== undefined
+                ? data.rssi
+                : "—";
+
+
+        /* SNR */
+
+        infoValues[2].textContent =
+            data.snr !== null &&
+            data.snr !== undefined
+                ? data.snr
+                : "—";
+
+
+        /* Dernière mesure */
+
+        updateLastMeasurement(data);
+    }
+
+
+    /*
+     * Nom du capteur
+     */
+
+    const deviceName =
+        document.querySelector(
+            ".device-name"
+        );
+
+    if (deviceName) {
+
+        deviceName.textContent =
+            data.device_name ||
+            "SenseCAP S2120";
+    }
+
+
+    /*
+     * Localisation
+     */
+
+    updateMap(data);
+}
+
+
+/* ==========================================
+   DERNIÈRE MESURE
+   ========================================== */
+
+function updateLastMeasurement(data) {
+
+    const element =
+        document.getElementById(
+            "lastMeasurementTime"
+        );
+
+    if (!element) {
+        return;
+    }
+
+
+    const measurementTime =
+        data.time ||
+        data.measured_at;
+
+
+    if (!measurementTime) {
+
+        element.textContent = "—";
+
+        return;
+    }
+
+
+    const date =
+        new Date(measurementTime);
+
+
+    if (isNaN(date.getTime())) {
+
+        element.textContent =
+            measurementTime;
+
+        return;
+    }
+
+
+    element.textContent =
+        date.toLocaleString(
+            "fr-FR",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+}
+
+
+/* ==========================================
+   ALERTES MÉTÉO
+   ========================================== */
+
+const ALERT_THRESHOLDS = {
+
+    temperature: 35,
+
+    humidity: 90,
+
+    wind_speed: 60,
+
+    peak_wind: 80,
+
+    uv_index: 8,
+
+    rainfall: 10
+};
+
+
+function checkWeatherAlerts(data) {
+
+    const alerts = [];
+
+
+    /* Température */
+
+    if (
+        data.temperature !== null &&
+        data.temperature !== undefined &&
+        Number(data.temperature)
+            >= ALERT_THRESHOLDS.temperature
+    ) {
+
+        alerts.push(
+            "🌡️ Température élevée : "
+            + Number(
+                data.temperature
+            ).toFixed(1)
+            + " °C"
+        );
+    }
+
+
+    /* Humidité */
+
+    if (
+        data.humidity !== null &&
+        data.humidity !== undefined &&
+        Number(data.humidity)
+            >= ALERT_THRESHOLDS.humidity
+    ) {
+
+        alerts.push(
+            "💧 Humidité élevée : "
+            + Number(
+                data.humidity
+            ).toFixed(0)
+            + " %"
+        );
+    }
+
+
+    /* Vent */
+
+    if (
+        data.wind_speed !== null &&
+        data.wind_speed !== undefined &&
+        Number(data.wind_speed)
+            >= ALERT_THRESHOLDS.wind_speed
+    ) {
+
+        alerts.push(
+            "💨 Vent fort : "
+            + Number(
+                data.wind_speed
+            ).toFixed(1)
+            + " km/h"
+        );
+    }
+
+
+    /* Rafale */
+
+    if (
+        data.peak_wind !== null &&
+        data.peak_wind !== undefined &&
+        Number(data.peak_wind)
+            >= ALERT_THRESHOLDS.peak_wind
+    ) {
+
+        alerts.push(
+            "🌪️ Rafale importante : "
+            + Number(
+                data.peak_wind
+            ).toFixed(1)
+            + " km/h"
+        );
+    }
+
+
+    /* UV */
+
+    if (
+        data.uv_index !== null &&
+        data.uv_index !== undefined &&
+        Number(data.uv_index)
+            >= ALERT_THRESHOLDS.uv_index
+    ) {
+
+        alerts.push(
+            "☀️ Indice UV élevé : "
+            + Number(
+                data.uv_index
+            ).toFixed(1)
+        );
+    }
+
+
+    /* Pluie */
+
+    if (
+        data.rainfall !== null &&
+        data.rainfall !== undefined &&
+        Number(data.rainfall)
+            >= ALERT_THRESHOLDS.rainfall
+    ) {
+
+        alerts.push(
+            "🌧️ Forte pluie : "
+            + Number(
+                data.rainfall
+            ).toFixed(1)
+        );
+    }
+
+
+    showWeatherAlert(alerts);
+}
+
+
+/* ==========================================
+   AFFICHAGE ALERTE
+   ========================================== */
+
+function showWeatherAlert(alerts) {
+
+    const banner =
+        document.getElementById(
+            "alertBanner"
+        );
+
+    const title =
+        document.getElementById(
+            "alertTitle"
+        );
+
+    const message =
+        document.getElementById(
+            "alertMessage"
+        );
+
+
+    if (!banner) {
+        return;
+    }
+
+
+    if (alerts.length === 0) {
+
+        banner.style.display = "none";
+
+        return;
+    }
+
+
+    if (title) {
+
+        title.textContent =
+            alerts.length === 1
+                ? "⚠️ Alerte météo"
+                : "⚠️ Alertes météo";
+    }
+
+
+    if (message) {
+
+        message.innerHTML =
+            alerts.join("<br>");
+    }
+
+
+    banner.style.display = "flex";
+}
+
+
+/* ==========================================
+   FERMER ALERTE
+   ========================================== */
+
+function closeAlert() {
+
+    const banner =
+        document.getElementById(
+            "alertBanner"
+        );
+
+    if (banner) {
+
+        banner.style.display =
+            "none";
+    }
+}
+
+
+/* ==========================================
+   ACTUALISATION DE TOUTES LES DONNÉES
+   ========================================== */
+
+async function refreshData() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/data?t="
+                + Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Erreur API : "
+                + response.status
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Données actualisées :",
+            data
+        );
+
+
+        /*
+         * Mise à jour de TOUS les blocs
+         */
+
+        updateWeatherBlocks(data);
+
+
+        /*
+         * Mise à jour de la dernière mesure
+         */
+
+        updateLastMeasurement(data);
+
+
+        /*
+         * Mise à jour des alertes
+         */
+
+        checkWeatherAlerts(data);
+
+    } catch (error) {
+
+        console.error(
+            "Erreur actualisation :",
+            error
+        );
+    }
+}
+
+
+/* ==========================================
+   INITIALISATION
    ========================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+        /*
+         * Carte
+         */
+
+        initMap();
+
+
+        /*
+         * Historique initial
+         */
+
         loadHistory(24);
 
 
         /*
-         * Actualisation de l'historique
-         * toutes les 10 secondes.
+         * Première actualisation immédiate
+         */
+
+        refreshData();
+
+
+        /*
+         * Historique toutes les 10 secondes
          */
 
         setInterval(
@@ -1474,66 +2208,22 @@ document.addEventListener(
             10000
         );
 
-    }
-);
-
-/* ==========================================
-   ACTUALISATION AUTOMATIQUE DES DONNÉES
-   ========================================== */
-
-async function refreshData() {
-
-    try {
-
-        const response = await fetch(
-            "/api/data?t=" + Date.now()
-        );
-
-        if (!response.ok) {
-            throw new Error(
-                "Erreur API : " + response.status
-            );
-        }
-
-        const data = await response.json();
-
-        console.log(
-            "Données actualisées :",
-            data
-        );
 
         /*
-         * Pour appliquer les nouvelles valeurs
-         * sans recharger toute la page,
-         * on recharge simplement la page.
-         *
-         * L'horloge continue de fonctionner
-         * grâce au script précédent.
+         * TOUTES LES DONNÉES
+         * toutes les 5 secondes
          */
 
-        location.reload();
-
-    } catch (error) {
-
-        console.error(
-            "Erreur actualisation :",
-            error
+        setInterval(
+            refreshData,
+            5000
         );
 
     }
-
-}
-
-
-/*
- * Actualisation toutes les 5 secondes
- */
-
-setInterval(
-    refreshData,
-    5000
 );
+
 </script>
+
 
 
 </body>

@@ -1421,3 +1421,157 @@ button {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ==========================================
+   LOCALISATION
+   ========================================== */
+
+.location-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 20px;
+}
+
+
+/* Informations GPS à gauche */
+
+.location-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* Carte réduite à droite */
+
+.weather-map {
+    width: 450px;
+    height: 280px;
+    border-radius: 15px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+
+/* Adaptation mobile */
+
+@media (max-width: 768px) {
+
+    .location-card {
+        flex-direction: column;
+    }
+
+    .location-info {
+        width: 100%;
+    }
+
+    .weather-map {
+        width: 100%;
+        height: 250px;
+    }
+
+}
+
+/* ==========================================
+   BANDEAU ALERTE
+   ========================================== */
+
+.alert-banner {
+    margin: 20px auto;
+    max-width: 1400px;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 16px 20px;
+
+    background: #fee2e2;
+    color: #991b1b;
+
+    border: 2px solid #ef4444;
+    border-radius: 14px;
+
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+
+    animation: alertPulse 2s infinite;
+}
+
+.alert-icon {
+    font-size: 28px;
+}
+
+.alert-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.alert-content strong {
+    font-size: 17px;
+}
+
+.alert-content span {
+    font-size: 14px;
+}
+
+.alert-close {
+    border: none;
+    background: transparent;
+
+    color: #991b1b;
+
+    font-size: 28px;
+    cursor: pointer;
+
+    padding: 0 5px;
+}
+
+.alert-close:hover {
+    color: #7f1d1d;
+}
+
+
+/* Animation légère */
+
+@keyframes alertPulse {
+
+    0%, 100% {
+        box-shadow:
+            0 4px 15px rgba(239, 68, 68, 0.15);
+    }
+
+    50% {
+        box-shadow:
+            0 4px 22px rgba(239, 68, 68, 0.35);
+    }
+
+}
+
+
+/* Mode sombre */
+
+.dark-mode .alert-banner {
+    background: #451a1a;
+    color: #fecaca;
+    border-color: #ef4444;
+}
+
+.dark-mode .alert-close {
+    color: #fecaca;
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .alert-banner {
+        margin: 15px;
+    }
+
+}
