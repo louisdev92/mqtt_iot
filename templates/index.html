@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Station météo - SenseCAP S2120
+    </title>
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Leaflet JS -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+     ========================================== -->
+
+<header class="header">
+
+    <div>
+
+        <h1>
+            🌦️ Station météo
+        </h1>
+
+        <p class="device-name">
+
+            {{ data.get(
+                "device_name",
+                "SenseCAP S2120"
+            ) }}
+
+        </p>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <!-- HORLOGE -->
+
+        <div class="clock">
+
+            🕐
+
+            <span id="currentTime">
+                --:--:--
+            </span>
+
+        </div>
+
+
+        <!-- MODE SOMBRE -->
+
+        <button
+            id="darkModeButton"
+            class="dark-mode-button"
+            onclick="toggleDarkMode()"
+        >
+            🌙 Mode sombre
+        </button>
+
+
+        <!-- STATUT -->
+
+        <div class="status">
+
+            <span class="status-dot"></span>
+
+            <span>
+                Capteur connecté
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- ==========================================
+     CONTENU
+     ========================================== -->
+
+<main>
+
+{% if data %}
+
+
+<!-- ==========================================
+     VALEURS PRINCIPALES
+     ========================================== -->
+
+<section class="dashboard">
+
+
+    <!-- TEMPÉRATURE -->
+
+    <div class="weather-card temperature">
+
+        <div class="card-header">
+
+            <span class="card-icon">
+                🌡️
+            </span>
+
+            <span class="card-title">
+                Température
+            </span>
+
+        </div>
+
+
+        <div class="main-value">
+
+            {{ "%.1f"|format(
+                data.get("temperature", 0) or 0
+            ) }}
+
+            <span>
+                °C
+            </span>
+
+        </div>
+
+
+        <div class="trend neutral">
+            Température actuelle
+        </div>
+
+    </div>
+
+
+    <!-- HUMIDITÉ -->
+
+    <div class="weather-card humidity">
+
+        <div class="card-header">
+
+            <span class="card-icon">
+                💧
+            </span>
+
+            <span class="card-title">
+                Humidité
+            </span>
+
+        </div>
+
+
+        <div class="main-value">
+
+            {{ "%.0f"|format(
+                data.get("humidity", 0) or 0
+            ) }}
+
+            <span>
+                %
+            </span>
+
+        </div>
+
+
+        <div class="trend neutral">
+            Humidité actuelle
+        </div>
+
+    </div>
+
+
+    <!-- VENT -->
+
+    <div class="weather-card wind">
+
+        <div class="card-header">
+
+            <span class="card-icon">
+                💨
+            </span>
+
+            <span class="card-title">
+                Vent
+            </span>
+
+        </div>
+
+
+        <div class="main-value">
+
+            {{ "%.1f"|format(
+                data.get("wind_speed", 0) or 0
+            ) }}
+
+            <span>
+                km/h
+            </span>
+
+        </div>
+
+
+        <div class="trend neutral">
+            Vitesse actuelle
+        </div>
+
+    </div>
+
+
+    <!-- PRESSION -->
+
+    <div class="weather-card pressure">
+
+        <div class="card-header">
+
+            <span class="card-icon">
+                🔵
+            </span>
+
+            <span class="card-title">
+                Pression
+            </span>
+
+        </div>
+
+
+        <div class="main-value">
+
+            {{ "%.1f"|format(
+                data.get("air_pressure", 0) or 0
+            ) }}
+
+            <span>
+                hPa
+            </span>
+
+        </div>
+
+
+        <div class="trend neutral">
+            Pression atmosphérique
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     AUTRES MESURES
+     ========================================== -->
+
+<section class="section">
+
+    <h2>
+        📊 Mesures météorologiques
+    </h2>
+
+
+    <div class="measurements">
+
+
+        <div class="measurement-card">
+
+            <div class="measurement-icon">
+                🧭
+            </div>
+
+            <div>
+
+                <div class="measurement-name">
+                    Direction du vent
+                </div>
+
+                <div class="measurement-value">
+
+                    {{ "%.0f"|format(
+                        data.get(
+                            "wind_direction",
+                            0
+                        ) or 0
+                    ) }}
+
+                    °
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="measurement-card">
+
+            <div class="measurement-icon">
+                🌪️
+            </div>
+
+            <div>
+
+                <div class="measurement-name">
+                    Rafale maximale
+                </div>
+
+                <div class="measurement-value">
+
+                    {{ "%.1f"|format(
+                        data.get(
+                            "peak_wind",
+                            0
+                        ) or 0
+                    ) }}
+
+                    km/h
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="measurement-card">
+
+            <div class="measurement-icon">
+                ☀️
+            </div>
+
+            <div>
+
+                <div class="measurement-name">
+                    Indice UV
+                </div>
+
+                <div class="measurement-value">
+
+                    {{ "%.1f"|format(
+                        data.get(
+                            "uv_index",
+                            0
+                        ) or 0
+                    ) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="measurement-card">
+
+            <div class="measurement-icon">
+                💡
+            </div>
+
+            <div>
+
+                <div class="measurement-name">
+                    Luminosité
+                </div>
+
+                <div class="measurement-value">
+
+                    {{ "%.0f"|format(
+                        data.get(
+                            "illumination",
+                            0
+                        ) or 0
+                    ) }}
+
+                    lux
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="measurement-card">
+
+            <div class="measurement-icon">
+                🌧️
+            </div>
+
+            <div>
+
+                <div class="measurement-name">
+                    Pluie
+                </div>
+
+                <div class="measurement-value">
+
+                    {{ "%.3f"|format(
+                        data.get(
+                            "rainfall",
+                            0
+                        ) or 0
+                    ) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="measurement-card">
+
+            <div class="measurement-icon">
+                ☔
+            </div>
+
+            <div>
+
+                <div class="measurement-name">
+                    Accumulation pluie
+                </div>
+
+                <div class="measurement-value">
+
+                    {{ "%.3f"|format(
+                        data.get(
+                            "rain_accumulation",
+                            0
+                        ) or 0
+                    ) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     LOCALISATION
+     ========================================== -->
+
+<section class="section">
+
+    <h2>
+        📍 Localisation de la station météo
+    </h2>
+
+
+    <div class="location-card">
+
+
+        <div class="location-info">
+
+
+            <div>
+
+                <span>
+                    Latitude
+                </span>
+
+                <strong>
+                    {{ data.get(
+                        "latitude",
+                        "—"
+                    ) }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Longitude
+                </span>
+
+                <strong>
+                    {{ data.get(
+                        "longitude",
+                        "—"
+                    ) }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div
+            id="map"
+            class="weather-map"
+        ></div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     HISTORIQUE
+     ========================================== -->
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                📈 Historique
+            </h2>
+
+            <p>
+                Évolution des mesures enregistrées
+            </p>
+
+        </div>
+
+
+        <div class="history-buttons">
+
+            <button
+                onclick="loadHistory(1)"
+            >
+                1 h
+            </button>
+
+            <button
+                onclick="loadHistory(6)"
+            >
+                6 h
+            </button>
+
+            <button
+                onclick="loadHistory(24)"
+                class="active"
+            >
+                24 h
+            </button>
+
+            <button
+                onclick="loadHistory(168)"
+            >
+                7 jours
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATISTIQUES -->
+
+    <div class="trend-container">
+
+
+        <div class="trend-card">
+
+            <div class="trend-title">
+                🌡️ Température
+            </div>
+
+            <div
+                class="trend-value"
+                id="temperatureStats"
+            >
+                —
+            </div>
+
+            <div class="trend-description">
+                Min / Moyenne / Max
+            </div>
+
+        </div>
+
+
+        <div class="trend-card">
+
+            <div class="trend-title">
+                💧 Humidité
+            </div>
+
+            <div
+                class="trend-value"
+                id="humidityStats"
+            >
+                —
+            </div>
+
+            <div class="trend-description">
+                Min / Moyenne / Max
+            </div>
+
+        </div>
+
+
+        <div class="trend-card">
+
+            <div class="trend-title">
+                💨 Vent
+            </div>
+
+            <div
+                class="trend-value"
+                id="windStats"
+            >
+                —
+            </div>
+
+            <div class="trend-description">
+                Min / Moyenne / Max
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TEMPÉRATURE -->
+
+    <div class="chart-container">
+
+        <h3>
+            🌡️ Évolution de la température
+        </h3>
+
+        <canvas
+            id="temperatureChart"
+        ></canvas>
+
+    </div>
+
+
+    <!-- HUMIDITÉ -->
+
+    <div class="chart-container">
+
+        <h3>
+            💧 Évolution de l'humidité
+        </h3>
+
+        <canvas
+            id="humidityChart"
+        ></canvas>
+
+    </div>
+
+
+    <!-- VENT -->
+
+    <div class="chart-container">
+
+        <h3>
+            💨 Évolution du vent
+        </h3>
+
+        <canvas
+            id="windChart"
+        ></canvas>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     INFORMATIONS CAPTEUR
+     ========================================== -->
+
+<section class="section">
+
+    <h2>
+        📡 Informations du capteur
+    </h2>
+
+
+    <div class="info-grid">
+
+
+        <div class="info-item">
+
+            <span>
+                Type
+            </span>
+
+            <strong>
+                {{ data.get(
+                    "device_type",
+                    "SenseCAP S2120"
+                ) }}
+            </strong>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <span>
+                RSSI
+            </span>
+
+            <strong>
+                {{ data.get(
+                    "rssi",
+                    "—"
+                ) }}
+            </strong>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <span>
+                SNR
+            </span>
+
+            <strong>
+                {{ data.get(
+                    "snr",
+                    "—"
+                ) }}
+            </strong>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <span>
+                Dernière mesure
+            </span>
+
+            <strong>
+                {{ data.get(
+                    "time",
+                    data.get(
+                        "measured_at",
+                        "—"
+                    )
+                ) }}
+            </strong>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+{% else %}
+
+
+<!-- ==========================================
+     ATTENTE
+     ========================================== -->
+
+<section class="waiting">
+
+    <div class="waiting-icon">
+        📡
+    </div>
+
+    <h2>
+        En attente des données...
+    </h2>
+
+    <p>
+        Le serveur attend une mesure
+        du capteur SenseCAP S2120.
+    </p>
+
+    <div class="loading">
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+    </div>
+
+</section>
+
+
+{% endif %}
+
+</main>
+
+
+<!-- ==========================================
+     FOOTER
+     ========================================== -->
+
+<footer>
+
+    <p>
+        🌦️ Station météo — SenseCAP S2120
+    </p>
+
+    <p>
+        🕐
+        <span id="footerTime">
+            --:--:--
+        </span>
+    </p>
+
+</footer>
+
+
+<script>
+
+/* ==========================================
+   HORLOGE
+   ========================================== */
+
+function updateClock() {
+
+    const now = new Date();
+
+    const time =
+        now.toLocaleTimeString(
+            "fr-FR",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+
+    const date =
+        now.toLocaleDateString(
+            "fr-FR",
+            {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+    const text =
+        date + " — " + time;
+
+
+    const clock =
+        document.getElementById(
+            "currentTime"
+        );
+
+    const footer =
+        document.getElementById(
+            "footerTime"
+        );
+
+
+    if (clock) {
+
+        clock.textContent = text;
+
+    }
+
+
+    if (footer) {
+
+        footer.textContent = text;
+
+    }
+
+}
+
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* ==========================================
+   MODE SOMBRE
+   ========================================== */
+
+function toggleDarkMode() {
+
+    document.body.classList.toggle(
+        "dark-mode"
+    );
+
+
+    const button =
+        document.getElementById(
+            "darkModeButton"
+        );
+
+
+    if (
+        document.body.classList.contains(
+            "dark-mode"
+        )
+    ) {
+
+        button.textContent =
+            "☀️ Mode clair";
+
+        localStorage.setItem(
+            "darkMode",
+            "true"
+        );
+
+    } else {
+
+        button.textContent =
+            "🌙 Mode sombre";
+
+        localStorage.setItem(
+            "darkMode",
+            "false"
+        );
+
+    }
+
+}
+
+
+/* Restaurer le mode sombre */
+
+if (
+    localStorage.getItem(
+        "darkMode"
+    ) === "true"
+) {
+
+    document.body.classList.add(
+        "dark-mode"
+    );
+
+
+    const button =
+        document.getElementById(
+            "darkModeButton"
+        );
+
+
+    if (button) {
+
+        button.textContent =
+            "☀️ Mode clair";
+
+    }
+
+}
+
+
+/* ==========================================
+   CARTE
+   ========================================== */
+
+function initMap() {
+
+    const latitude =
+        parseFloat(
+            "{{ data.get('latitude', '') }}"
+        );
+
+    const longitude =
+        parseFloat(
+            "{{ data.get('longitude', '') }}"
+        );
+
+
+    if (
+        isNaN(latitude) ||
+        isNaN(longitude)
+    ) {
+
+        console.error(
+            "Coordonnées GPS indisponibles"
+        );
+
+        return;
+
+    }
+
+
+    const map =
+        L.map("map").setView(
+            [
+                latitude,
+                longitude
+            ],
+            15
+        );
+
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+
+            attribution:
+                "&copy; OpenStreetMap contributors",
+
+            maxZoom: 19
+
+        }
+    ).addTo(map);
+
+
+    const marker =
+        L.marker(
+            [
+                latitude,
+                longitude
+            ]
+        ).addTo(map);
+
+
+    marker.bindPopup(
+        `
+        <strong>🌦️ Station météo</strong>
+        <br>
+        SenseCAP S2120
+        <br><br>
+        Latitude : ${latitude}
+        <br>
+        Longitude : ${longitude}
+        `
+    );
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        initMap();
+
+    }
+);
+
+
+/* ==========================================
+   GRAPHIQUES
+   ========================================== */
+
+let temperatureChart = null;
+
+let humidityChart = null;
+
+let windChart = null;
+
+
+function formatDate(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(dateString);
+
+
+    return date.toLocaleTimeString(
+        "fr-FR",
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+/* ==========================================
+   STATISTIQUES
+   ========================================== */
+
+function formatStats(
+    min,
+    avg,
+    max,
+    unit
+) {
+
+    if (
+        min === null ||
+        avg === null ||
+        max === null ||
+        min === undefined ||
+        avg === undefined ||
+        max === undefined
+    ) {
+
+        return "Aucune donnée";
+
+    }
+
+
+    return (
+        Number(min).toFixed(1)
+        + " "
+        + unit
+        + " → "
+        + Number(avg).toFixed(1)
+        + " "
+        + unit
+        + " → "
+        + Number(max).toFixed(1)
+        + " "
+        + unit
+    );
+
+}
+
+
+/* ==========================================
+   CRÉATION GRAPHIQUE
+   ========================================== */
+
+function createChart(
+    canvasId,
+    labels,
+    values,
+    label,
+    unit,
+    color
+) {
+
+    const canvas =
+        document.getElementById(
+            canvasId
+        );
+
+
+    if (!canvas) {
+
+        return null;
+
+    }
+
+
+    return new Chart(
+        canvas,
+        {
+
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+
+                        label: label,
+
+                        data: values,
+
+                        borderColor: color,
+
+                        backgroundColor:
+                            color + "22",
+
+                        borderWidth: 3,
+
+                        pointRadius: 3,
+
+                        pointHoverRadius: 6,
+
+                        fill: true,
+
+                        tension: 0.3
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        title: {
+
+                            display: true,
+
+                            text: unit
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   HISTORIQUE
+   ========================================== */
+
+async function loadHistory(
+    hours = 24
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/history?hours="
+                + hours
+                + "&t="
+                + Date.now()
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Erreur historique : "
+                + response.status
+            );
+
+        }
+
+
+        const history =
+            await response.json();
+
+
+        if (
+            !history ||
+            history.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        const labels =
+            history.map(
+                item =>
+                    formatDate(
+                        item.measured_at
+                    )
+            );
+
+
+        const temperatures =
+            history.map(
+                item =>
+                    item.temperature !== null
+                        ? Number(
+                            item.temperature
+                        )
+                        : null
+            );
+
+
+        const humidities =
+            history.map(
+                item =>
+                    item.humidity !== null
+                        ? Number(
+                            item.humidity
+                        )
+                        : null
+            );
+
+
+        const winds =
+            history.map(
+                item =>
+                    item.wind_speed !== null
+                        ? Number(
+                            item.wind_speed
+                        )
+                        : null
+            );
+
+
+        if (temperatureChart) {
+
+            temperatureChart.destroy();
+
+        }
+
+
+        if (humidityChart) {
+
+            humidityChart.destroy();
+
+        }
+
+
+        if (windChart) {
+
+            windChart.destroy();
+
+        }
+
+
+        temperatureChart =
+            createChart(
+                "temperatureChart",
+                labels,
+                temperatures,
+                "Température",
+                "°C",
+                "#ef4444"
+            );
+
+
+        humidityChart =
+            createChart(
+                "humidityChart",
+                labels,
+                humidities,
+                "Humidité",
+                "%",
+                "#3b82f6"
+            );
+
+
+        windChart =
+            createChart(
+                "windChart",
+                labels,
+                winds,
+                "Vent",
+                "km/h",
+                "#10b981"
+            );
+
+
+        /* Statistiques */
+
+        const statsResponse =
+            await fetch(
+                "/api/statistics?hours="
+                + hours
+                + "&t="
+                + Date.now()
+            );
+
+
+        if (statsResponse.ok) {
+
+            const stats =
+                await statsResponse.json();
+
+
+            document.getElementById(
+                "temperatureStats"
+            ).textContent =
+                formatStats(
+                    stats.temperature_min,
+                    stats.temperature_avg,
+                    stats.temperature_max,
+                    "°C"
+                );
+
+
+            document.getElementById(
+                "humidityStats"
+            ).textContent =
+                formatStats(
+                    stats.humidity_min,
+                    stats.humidity_avg,
+                    stats.humidity_max,
+                    "%"
+                );
+
+
+            document.getElementById(
+                "windStats"
+            ).textContent =
+                formatStats(
+                    stats.wind_min,
+                    stats.wind_avg,
+                    stats.wind_max,
+                    "km/h"
+                );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur historique :",
+            error
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   CHARGEMENT HISTORIQUE
+   ========================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadHistory(24);
+
+
+        /*
+         * Actualisation de l'historique
+         * toutes les 10 secondes.
+         */
+
+        setInterval(
+            function () {
+
+                loadHistory(24);
+
+            },
+            10000
+        );
+
+    }
+);
+
+/* ==========================================
+   ACTUALISATION AUTOMATIQUE DES DONNÉES
+   ========================================== */
+
+async function refreshData() {
+
+    try {
+
+        const response = await fetch(
+            "/api/data?t=" + Date.now()
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Erreur API : " + response.status
+            );
+        }
+
+        const data = await response.json();
+
+        console.log(
+            "Données actualisées :",
+            data
+        );
+
+        /*
+         * Pour appliquer les nouvelles valeurs
+         * sans recharger toute la page,
+         * on recharge simplement la page.
+         *
+         * L'horloge continue de fonctionner
+         * grâce au script précédent.
+         */
+
+        location.reload();
+
+    } catch (error) {
+
+        console.error(
+            "Erreur actualisation :",
+            error
+        );
+
+    }
+
+}
+
+
+/*
+ * Actualisation toutes les 5 secondes
+ */
+
+setInterval(
+    refreshData,
+    5000
+);
+</script>
+
+
+</body>
+
+</html>
